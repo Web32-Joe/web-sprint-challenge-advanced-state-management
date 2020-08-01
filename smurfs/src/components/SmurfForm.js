@@ -12,8 +12,8 @@ const initialFormValues = {
 
 function SmurfForm(){
     // const [formValues, setFormValues] = useState('');
-    const {formValues, setFormValues} = useContext(FormContext)
-    const {setSmurfs} = useContext(SmurfContext);
+    // const {formValues, setFormValues} = useContext(FormContext)
+    // const {setSmurfs} = useContext(SmurfContext);
 
     const handleChange = e => {
         const name = e.target.name

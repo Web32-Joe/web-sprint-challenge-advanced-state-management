@@ -1,19 +1,19 @@
-import React, { useContext} from 'react';
-import { SmurfContext } from '../contexts/SmurfContext';
+import React from "react";
+import { Link } from "react-router-dom";
 import SmurfCard from "./SmurfCard";
 
-function SmurfList() {
-    const {smurfs} = useContext(SmurfContext);
-
-    return(
-        <div>
-    {smurfs.map((smurfs) => {
-    return (
-        <SmurfCard />
-    );
-  })}
-        </div>
-    )
+function SmurfList({ smurfs }) {
+  return (
+    <div>
+      {
+        smurfs.map(smurf => (
+          <Link key={smurf.id} to={`/smurfs/${smurf.id}`}>
+            <SmurfCard smurfs={smurfs} />
+          </Link>
+        ))
+      }
+    </div>
+  );
 }
 
 export default SmurfList;

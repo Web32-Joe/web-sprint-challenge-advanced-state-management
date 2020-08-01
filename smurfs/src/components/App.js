@@ -1,38 +1,32 @@
 import React, { useState, useEffect } from "react";
-import "./App.css";
-import axios from "axios";
-import SmurfForm from "./SmurfForm";
-import { SmurfContext } from '../contexts/SmurfContext';
-import { FormContext } from "../contexts/FormContext";
+import { Route } from "react-router-dom";
+import SavedList from "./SavedList";
 import SmurfList from "./SmurfList";
-// import SmurfCard from "./SmurfCard";
-import {  Route, BrowserRouter as Router} from "react-router-dom";
-import EditSmurfForm from "./EditSmurfForm";
+import Smurf from "./Smurf";
+import axios from 'axios';
+import UpdateSmurf from './UpdateSmurf';
 
-function App () {
-  
-  const [smurfs, setSmurfs] = useState([]);
-  const [formValues, setFormValues] = useState('')
-  const [smurfList, setSmurfList] = useState([])
+const App = () => {
+  const [savedList, setSavedList] = useState([]);
+  const [smurfList, setSmurfList] = useState([]);
+  // const [smurfs, setSmurfs] = useState([]);
 
-  // GET REQUEST
-  const getSmurf = () => {
-    axios.get('http://localhost:3333/smurfs')
-    .then(res => {
-      console.log(res)
-      setSmurfs(res.data)
-    })
-    .catch(err => console.log(err))
-  }
 
-  useEffect(() => {
-    getSmurf()
-  }, [])
+  const getSmurfList = () => {
+    axios
+      .get("http://localhost:3333/smurfs")
+      .then(res => setSmurfList(res.data))
+      .catch(err => console.log(err.response));
+  };
 
-  const deleteSmurf = smurfId => {
-    const updatedSmurfList = smurfList.filter((smurfs) => smurfs.id !== smurfId);
-    setSmurfList(updatedSmurfList);
-  }
+  const addToSavedList = smurf => {
+    setSavedList([...savedList, smurf]);
+  };
+
+    const deleteSmurf = smurfsId => {
+      const updatedSmurfsList = smurfList.filter((smurfs) => smurfs.id !== smurfsId);
+      setSmurfList(updatedSmurfsList);
+    }
 
   const updateSmurf = updatedSmurf => {
     const updatedSmurfs = smurfList.map(smurfs => {
@@ -44,35 +38,33 @@ function App () {
     setSmurfList(updatedSmurfs);
   }
 
+  useEffect(() => {
+    getSmurfList();
+  }, []);
 
+  return (
+    <>
+      <SavedList list={savedList} />
 
-    return (
-      <SmurfContext.Provider value={{smurfs, setSmurfs, getSmurf}}>
-      <FormContext.Provider value={{formValues, setFormValues}}>
+      <Route exact path="/">
+        <SmurfList smurfs={SmurfList} />
+      </Route>
 
-      <div className="App">
+      <Route path="/smurfs/:id">
+        <Smurf addToSavedList={addToSavedList} deleteSmurf={deleteSmurf} />
+      </Route>
 
-      <Router>
-        
-          <Route>
-            <SmurfForm exact path='/' />
-          </Route>
-
-          <Route>
-            <SmurfList exact path='/smurflist' />
-          </Route>
-
-          <Route>
-            <EditSmurfForm exact path='/editsmurfs/:id' />
-          </Route>
-      
-      </Router>
-      </div>
-      </FormContext.Provider>
-
-      </SmurfContext.Provider>
-    );
-  
-}
+      <Route path="/update-smurf/:id"
+      render={props => ( 
+      <UpdateSmurf
+        {...props} 
+        smurfList={smurfList}
+        updateSmurf={updateSmurf}
+      />
+      )}
+        />
+    </>
+  );
+};
 
 export default App;
